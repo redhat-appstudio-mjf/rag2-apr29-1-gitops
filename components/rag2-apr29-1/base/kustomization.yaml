@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+commonLabels:
+  argocd/app-name: rag2-apr29-1
+  janus-idp.io/tekton: rag2-apr29-1
+  backstage.io/kubernetes-id: rag2-apr29-1
+  backstage.io/kubernetes-namespace: rag2-apr29-1
+  app.kubernetes.io/part-of: rag2-apr29-1
+resources:
+  - initialize-namespace/
+  - pvc.yaml
+  - deployment-model-server.yaml
+  - service-model-server.yaml
+  - deployment.yaml
+  - route.yaml
+  - service.yaml
+  - model-config.yaml
+  - deployment-database.yaml
+  - service-database.yaml
+  - database-config.yaml

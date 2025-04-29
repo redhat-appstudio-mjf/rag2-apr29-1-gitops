@@ -1,0 +1,14 @@
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: rag2-apr29-1-imagestream-job-role
+  namespace: redhat-ods-applications
+rules:
+  - verbs:
+      - get
+      - create
+      - list
+    apiGroups:
+      - "image.openshift.io"
+    resources:
+      - imagestreams

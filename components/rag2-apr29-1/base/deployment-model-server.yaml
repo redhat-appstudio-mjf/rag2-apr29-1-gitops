@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/instance: rag2-apr29-1-model-server
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: rag2-apr29-1-model-server
+    app.kubernetes.io/part-of: rag2-apr29-1
+  name: rag2-apr29-1-model-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: rag2-apr29-1-model-server
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: rag2-apr29-1-model-server
+    spec:
+      containers:
+        - image: quay.io/maysunfaisal/vllm-openai-ubi9:v0.8.4
+          args: ["--model", "ibm-granite/granite-3.1-8b-instruct", "--port", "8001", "--download-dir", "/models-cache", "--max-model-len", "4096"]
+          resources:
+            limits:
+              nvidia.com/gpu: '1'
+          volumeMounts:
+            - name: dshm
+              mountPath: /dev/shm
+            - name: models-cache
+              mountPath: /models-cache
+          name: app-model-service
+          ports:
+            - containerPort: 8001
+          securityContext:
+            runAsNonRoot: true
+      volumes:
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: "2Gi"
+        - name: models-cache
+          persistentVolumeClaim:
+            claimName: rag2-apr29-1
+      tolerations:
+        - key: nvidia.com/gpu
+          operator: Exists
+          effect: NoSchedule

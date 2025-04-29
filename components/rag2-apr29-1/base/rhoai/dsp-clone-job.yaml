@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: dsp-clone-job-rag2-apr29-1-gitops
+spec:
+  template:
+    metadata:
+      name: dsp-clone-job-rag2-apr29-1-gitops
+    spec:
+      serviceAccountName: rag2-apr29-1-dsp-job
+      containers:
+        - name: initialize-dsp
+          image: quay.io/redhat-ai-dev/utils:latest
+          command:
+            - /bin/bash
+            - -c
+            - |
+              NS=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
+              oc wait -l statefulset=rag2-apr29-1-notebook --for=condition=ready pod --timeout=300s
+              oc exec  StatefulSet/rag2-apr29-1-notebook -- git clone https://github.com/redhat-appstudio-mjf/rag2-apr29-1
+      restartPolicy: Never
